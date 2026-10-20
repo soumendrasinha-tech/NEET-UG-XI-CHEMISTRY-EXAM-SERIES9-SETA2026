@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soumendra Sir's Biology Classes - CBT Portal</title>
+    <!-- MathJax for rendering LaTeX formulas & chemical notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js for performance report -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas for secure image report generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #008080;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Anti-Camera Security Overlay Pattern */
+        .moire-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.08;
+            background: repeating-linear-gradient(
+                45deg,
+                #000,
+                #000 1px,
+                transparent 1px,
+                transparent 3px
+            ), repeating-linear-gradient(
+                -45deg,
+                #000,
+                #000 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        header {
+            background: linear-gradient(135deg, #002244, #004488);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 4px solid #ffc107;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; letter-spacing: 0.5px; }
+        header h2 { font-size: 1.1rem; color: #ffc107; font-weight: 400; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Verification Screen */
+        .auth-form {
+            max-width: 480px;
+            margin: 30px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .captcha-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .captcha-code {
+            background: #e0e0e0;
+            padding: 10px 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            border-radius: 4px;
+            text-decoration: line-through;
+            font-family: monospace;
+            color: var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: #001a33; }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #146c43; }
+        .btn-warning { background: var(--warning); color: #000; }
+
+        /* Rules & Instructions */
+        .rules-list {
+            margin: 15px 0 25px 20px;
+            line-height: 1.8;
+        }
+
+        .subtopic-badge {
+            display: inline-block;
+            background: #eef4ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin: 3px;
+            border: 1px solid #cce0ff;
+        }
+
+        /* Exam Layout */
+        #exam-screen {
+            display: none;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e9ecef;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .timer-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--danger);
+            background: white;
+            padding: 6px 15px;
+            border-radius: 4px;
+            border: 1px solid #ffc107;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .exam-grid { grid-template-columns: 1fr; }
+        }
+
+        .question-box {
+            min-height: 440px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .q-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-bottom: 2px solid #f4f6f9;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .q-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .q-text svg {
+            display: block;
+            margin: 15px auto;
+            max-width: 100%;
+            height: auto;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .option-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            background: #eef4ff;
+        }
+
+        .option-item.selected {
+            background: #d1e7dd;
+            border-color: #0f5132;
+            font-weight: 600;
+        }
+
+        .option-item input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        .q-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #f4f6f9;
+        }
+
+        /* Palette / Colourful Dots Panel */
+        .palette-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-answered { background-color: var(--success); }
+        .dot-not-answered { background-color: var(--danger); }
+        .dot-marked { background-color: #6f42c1; }
+        .dot-not-visited { background-color: #ced4da; }
+
+        .grid-dots {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .dot-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid #adb5bd;
+            background-color: #ced4da;
+            color: #333;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .dot-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .dot-btn.active {
+            border: 3px solid #000;
+        }
+
+        .dot-btn.status-not-answered { background-color: var(--danger); color: white; border-color: var(--danger); }
+        .dot-btn.status-answered { background-color: var(--success); color: white; border-color: var(--success); }
+        .dot-btn.status-marked { background-color: #6f42c1; color: white; border-color: #6f42c1; }
+
+        /* Detailed Report Screen */
+        #report-screen {
+            display: none;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 30px auto;
+        }
+
+        .weak-area-card {
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+        }
+
+        .weak-area-card h4 {
+            color: #664d03;
+            margin-bottom: 10px;
+        }
+
+        .weak-area-card ul {
+            margin-left: 20px;
+            color: #664d03;
+        }
+
+        .explanation-item {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+
+        .explanation-item.correct-bg {
+            border-left: 5px solid var(--success);
+        }
+
+        .explanation-item.incorrect-bg {
+            border-left: 5px solid var(--danger);
+        }
+
+        .explanation-item.unattempted-bg {
+            border-left: 5px solid #6c757d;
+        }
+
+        /* Security Warning Overlay */
+        #fullscreen-warning {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95);
+            color: white;
+            z-index: 10000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #fullscreen-warning h2 { color: var(--danger); margin-bottom: 15px; }
+
+        .watermark-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .watermark-text {
+            position: absolute;
+            color: rgba(0, 51, 102, 0.06);
+            font-size: 1.5rem;
+            font-weight: bold;
+            transform: rotate(-30deg);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+
+    <div class="moire-overlay"></div>
+
+    <header>
+        <h1>Soumendra Sir's Biology Classes-8910587106</h1>
+        <h2>NEET CHEMISTRY XI EXAM SERIES 9 SET A</h2>
+    </header>
+
+    <div class="container">
+        
+        <!-- CANDIDATE VERIFICATION SCREEN -->
+        <div id="auth-screen" class="card auth-form">
+            <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary);">Candidate Portal Verification</h3>
+            
+            <div class="form-group">
+                <label>Candidate Full Name:</label>
+                <input type="text" id="candidate-name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Exam Passcode (DDMMYYYY format):</label>
+                <input type="password" id="exam-password" placeholder="Enter today's date passcode" required>
+            </div>
+
+            <div class="form-group">
+                <label>Captcha Verification:</label>
+                <div class="captcha-box">
+                    <span id="captcha-code" class="captcha-code">----</span>
+                    <button type="button" class="btn btn-warning" onclick="generateCaptcha()" style="padding: 5px 10px; font-size: 0.8rem;">Refresh</button>
+                </div>
+                <input type="text" id="captcha-input" placeholder="Enter security captcha code" required>
+            </div>
+
+            <button class="btn btn-success" style="width: 100%; font-size: 1.05rem;" onclick="verifyCandidate()">Verify Identity & Proceed</button>
+        </div>
+
+        <!-- EXAM INSTRUCTIONS SCREEN -->
+        <div id="instructions-screen" class="card" style="display: none;">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">Exam Instructions & Topic Details</h2>
+            <hr style="margin-bottom: 15px;">
+            <div style="margin: 15px 0;">
+                <p><strong>Topic:</strong> Classification of Elements and Periodicity in Properties</p>
+                <p style="margin-top: 8px;"><strong>Subtopics Covered:</strong></p>
+                <div style="margin: 5px 0 15px 0;">
+                    <span class="subtopic-badge">Modern Periodic Law & Periodic Table</span>
+                    <span class="subtopic-badge">s, p, d, f Block Elements</span>
+                    <span class="subtopic-badge">Atomic & Ionic Radii Trends</span>
+                    <span class="subtopic-badge">Ionization Enthalpy (IE₁ & IE₂)</span>
+                    <span class="subtopic-badge">Electron Gain Enthalpy (ΔegH)</span>
+                    <span class="subtopic-badge">Electronegativity & Valence</span>
+                    <span class="subtopic-badge">Oxidation States & Chemical Reactivity</span>
+                </div>
+                <p><strong>Total Questions:</strong> 45 Questions | <strong>Total Marks:</strong> 180 Marks | <strong>Duration:</strong> 60 Minutes (1 Hour)</p>
+                <p><strong>Marking Scheme:</strong> <span style="color:var(--success); font-weight:bold;">+4</span> for Correct Answer, <span style="color:var(--danger); font-weight:bold;">-1</span> for Incorrect Answer, 0 for Unattempted.</p>
+            </div>
+
+            <h3 style="color: var(--primary); margin-top: 20px;">Strict Anti-Cheating Rules:</h3>
+            <ul class="rules-list">
+                <li><strong>Full-Screen Enforcement:</strong> The test runs strictly in full-screen mode. Exiting full-screen triggers security warnings and auto-submission.</li>
+                <li><strong>Tab-Switching Detection:</strong> Switching tabs or minimizing browser will lead to test cancellation.</li>
+                <li><strong>Copy/Paste & Context Menu Disabled:</strong> Keyboard shortcuts, selections, and right-click interactions are blocked.</li>
+                <li><strong>Anti-Camera Guard:</strong> Dynamic Moire pattern overlay is active to block external camera screen capture attempts.</li>
+            </ul>
+
+            <button class="btn btn-success" style="width: 100%; font-size: 1.1rem; padding: 14px;" onclick="startExam()">I Agree - Start NEET CBT Test Now</button>
+        </div>
+
+        <!-- CBT EXAM SCREEN -->
+        <div id="exam-screen" style="position: relative;">
+            <div id="watermark-layer" class="watermark-overlay"></div>
+            
+            <div class="exam-header">
+                <div>
+                    <strong>Candidate:</strong> <span id="disp-name">--</span>
+                </div>
+                <div class="timer-display">
+                    Time Remaining: <span id="time-left">60:00</span>
+                </div>
+            </div>
+
+            <div class="exam-grid">
+                <!-- Question Display Area -->
+                <div class="card question-box">
+                    <div>
+                        <div class="q-header">
+                            <span id="q-number">Question 1</span>
+                            <span id="q-type" style="float: right; font-size: 0.85rem; background: #e0e0e0; padding: 2px 8px; border-radius: 4px; color: #333;">Statement Based</span>
+                        </div>
+                        <div id="q-text" class="q-text">
+                            Loading question content...
+                        </div>
+                        <ul id="options-list" class="options-list">
+                            <!-- Options injected dynamically -->
+                        </ul>
+                    </div>
+
+                    <div class="q-actions">
+                        <button class="btn btn-warning" onclick="markForReview()">Mark for Review</button>
+                        <button class="btn" onclick="clearResponse()" style="background: #6c757d;">Clear Response</button>
+                        <div>
+                            <button class="btn" onclick="prevQuestion()" style="background: #343a40;">Previous</button>
+                            <button class="btn" onclick="nextQuestion()">Save & Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colourful Palette Column -->
+                <div class="palette-card">
+                    <h4 style="margin-bottom: 10px; text-align: center; color: var(--primary);">Question Status Palette</h4>
+                    <div class="legend">
+                        <div class="legend-item"><span class="dot dot-answered"></span> Answered</div>
+                        <div class="legend-item"><span class="dot dot-not-answered"></span> Not Answered</div>
+                        <div class="legend-item"><span class="dot dot-marked"></span> Review</div>
+                        <div class="legend-item"><span class="dot dot-not-visited"></span> Not Visited</div>
+                    </div>
+
+                    <div id="grid-dots" class="grid-dots">
+                        <!-- Dots 1-45 generated dynamically -->
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-danger" style="width: 100%;" onclick="confirmSubmit()">Submit Final Test</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAILED FEEDBACK REPORT SCREEN -->
+        <div id="report-screen">
+            <div id="report-card" class="card">
+                <div class="report-header">
+                    <h2>Soumendra Sir's Biology Classes</h2>
+                    <h3 style="color: var(--primary);">NEET CBT Detailed Feedback & Analytical Report</h3>
+                    <p style="margin-top: 5px;"><strong>Topic:</strong> NEET CHEMISTRY XI EXAM SERIES 9 SET A (Periodicity in Properties)</p>
+                    <p><strong>Candidate Name:</strong> <span id="rep-name">--</span> | <strong>Date:</strong> <span id="rep-date">--</span></p>
+                </div>
+
+                <div class="score-summary">
+                    <div class="stat-card">
+                        <div>Total Score</div>
+                        <h3 id="rep-score">0 / 180</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Correct Answers</div>
+                        <h3 id="rep-correct" style="color: var(--success);">0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Incorrect Answers</div>
+                        <h3 id="rep-incorrect" style="color: var(--danger);">0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Unattempted</div>
+                        <h3 id="rep-unattempted" style="color: #6c757d;">0</h3>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+
+                <div id="weak-areas-container" class="weak-area-card">
+                    <h4>Targeted Areas for Focus & Improvement:</h4>
+                    <ul id="weak-areas-list">
+                        <!-- Identified weak subtopics populated here -->
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <button class="btn btn-success" style="font-size: 1.1rem; padding: 12px 30px;" onclick="sendToWhatsApp()">
+                        Send Report to WhatsApp (8910587106)
+                    </button>
+                </div>
+
+                <hr style="margin-bottom: 25px;">
+
+                <h3 style="color: var(--primary); margin-bottom: 20px;">Detailed Question-wise Analysis & Explanations</h3>
+                <div id="explanations-container">
+                    <!-- Complete question key & detailed explanations populated here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FULLSCREEN SECURITY WARNING OVERLAY -->
+    <div id="fullscreen-warning">
+        <h2>Security Violation Warning!</h2>
+        <p>Full-Screen mode is mandatory for taking this exam.</p>
+        <p>Leaving full-screen or switching tabs will result in test cancellation.</p>
+        <button class="btn btn-warning" style="margin-top: 20px;" onclick="reenterFullscreen()">Return to Full-Screen Exam</button>
+    </div>
+
+    <script>
+        /* RAW MASTER QUESTION BANK - 45 UNIQUE QUESTIONS ON PERIODICITY */
+        const masterQuestions = [
+            // --- 10 STATEMENT BASED QUESTIONS ---
+            {
+                type: "Statement Based",
+                subtopic: "Modern Periodic Law",
+                text: "Read the following statements regarding the Modern Periodic Table:<br><b>Statement I:</b> Moseley showed that atomic number (Z) is a more fundamental property of an element than its atomic mass.<br><b>Statement II:</b> The physical and chemical properties of elements are periodic functions of their atomic masses.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 2,
+                explanation: "Moseley established that properties depend on atomic number (Z), not atomic mass. Thus, physical and chemical properties are periodic functions of atomic numbers."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Statement I:</b> Atomic radius decreases across a period from left to right due to an increase in effective nuclear charge (Z<sub>eff</sub>).<br><b>Statement II:</b> Among isoelectronic species, the cation with greater positive charge has a smaller ionic radius.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 0,
+                explanation: "Across a period, Z<sub>eff</sub> increases, pulling electrons closer. For isoelectronic species, higher nuclear charge causes greater contraction, making higher charged cations smaller."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Statement I:</b> The first ionization enthalpy of Nitrogen is higher than that of Oxygen.<br><b>Statement II:</b> Nitrogen possesses a completely filled 2p-subshell configuration which imparts extraordinary stability.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 2,
+                explanation: "Nitrogen (1s² 2s² 2p³) has a half-filled (not completely filled) 2p subshell, making its IE₁ higher than Oxygen (1s² 2s² 2p⁴)."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Electron Gain Enthalpy",
+                text: "<b>Statement I:</b> Chlorine has a more negative electron gain enthalpy (Δ<sub>eg</sub>H) than Fluorine.<br><b>Statement II:</b> Due to the small size of Fluorine, inter-electronic repulsions in its compact 2p-subshell are significant.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 0,
+                explanation: "Fluorine's small 2p orbital experiences strong inter-electronic repulsions when an incoming electron is added, making its Δ<sub>eg</sub>H less negative than Chlorine's 3p orbital."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "s, p, d, f Block Elements",
+                text: "<b>Statement I:</b> d-Block elements are situated between s-block and p-block elements and are collectively called transition elements.<br><b>Statement II:</b> All transition elements possess partially filled d-orbitals in their ground state or common oxidation states.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 2,
+                explanation: "Zn, Cd, and Hg are d-block elements but do NOT have partially filled d-orbitals in ground or oxidation states, so Statement II is false."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Electronegativity & Valence",
+                text: "<b>Statement I:</b> Electronegativity increases across a period and decreases down a group in the periodic table.<br><b>Statement II:</b> Fluorine is the most electronegative element on the Pauling scale with a value of 4.0.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 0,
+                explanation: "Electronegativity increases across a period due to increasing Z<sub>eff</sub> and decreases down a group. Fluorine has the highest value (4.0)."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Oxidation States & Chemical Reactivity",
+                text: "<b>Statement I:</b> Metallic character increases down a group and decreases across a period.<br><b>Statement II:</b> Non-metallic oxides are generally acidic in nature, whereas metallic oxides are basic.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 0,
+                explanation: "Down a group, IE decreases, raising metallic character. Across a period, IE increases. Non-metal oxides form acids with water, metal oxides form bases."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Statement I:</b> The second ionization enthalpy (IE₂) of an element is always greater than its first ionization enthalpy (IE₁).<br><b>Statement II:</b> It is easier to remove an electron from a positively charged cation than from a neutral atom.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 2,
+                explanation: "IE₂ > IE₁ because removing an electron from a cation faces greater electrostatic attraction from the nucleus. Statement II is false."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "s, p, d, f Block Elements",
+                text: "<b>Statement I:</b> Lanthanoids and Actinoids belong to the f-block and are placed separately at the bottom of the periodic table.<br><b>Statement II:</b> All actinoid elements are non-radioactive and occur abundantly in nature.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 2,
+                explanation: "Actinoids are radioactive elements, and many are synthetic (transuranium elements)."
+            },
+            {
+                type: "Statement Based",
+                subtopic: "Modern Periodic Law",
+                text: "<b>Statement I:</b> IUPAC nomenclature for elements with Z > 100 uses numerical roots for atomic numbers.<br><b>Statement II:</b> The element with atomic number Z = 120 is assigned the temporary symbol Ubn.",
+                options: ["Both Statement I and Statement II are correct", "Both Statement I and Statement II are incorrect", "Statement I is correct but Statement II is incorrect", "Statement I is incorrect but Statement II is correct"],
+                answer: 0,
+                explanation: "For Z = 120: 1 = un, 2 = bi, 0 = nil -> Unbinilium (Ubn)."
+            },
+
+            // --- 15 ASSERTION & REASONING BASED QUESTIONS ---
+            {
+                type: "Assertion & Reason",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Assertion (A):</b> The ionic radius of F⁻ is larger than that of Na⁺.<br><b>Reason (R):</b> F⁻ and Na⁺ are isoelectronic species, and Na⁺ has a higher nuclear charge than F⁻.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Both have 10 electrons. Na⁺ (Z=11) pulls electrons more tightly than F⁻ (Z=9), making Na⁺ smaller."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Assertion (A):</b> Ionization enthalpy of Beryllium is greater than that of Boron.<br><b>Reason (R):</b> Be has a fully filled 2s orbital (1s² 2s²), whereas B has one electron in a 2p orbital (1s² 2s² 2p¹).",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Penetration effect of 2s orbital and full-fill stability makes IE₁ of Be higher than B."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Electron Gain Enthalpy",
+                text: "<b>Assertion (A):</b> Noble gases have large positive electron gain enthalpies.<br><b>Reason (R):</b> Noble gases possess stable octet/duplet configurations, so incoming electrons enter higher principal quantum shells.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Stable subshells require energy input to add an extra electron into a new shell, resulting in positive Δ<sub>eg</sub>H."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Oxidation States & Chemical Reactivity",
+                text: "<b>Assertion (A):</b> Alkali metals exhibit an oxidation state of +1 only.<br><b>Reason (R):</b> Ionization enthalpy of alkali metals drops drastically after losing the first valence electron.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 2,
+                explanation: "Alkali metals show +1 because losing 1 electron yields noble gas core. IE₂ is extremely high, not low."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Assertion (A):</b> Atomic size of 4d and 5d transition series elements in the same group are almost identical.<br><b>Reason (R):</b> Lanthanoid contraction counteracts the expected size increase down the group from 4d to 5d.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Intervening 4f electrons shield poorly, increasing Z<sub>eff</sub> and canceling expected size growth from 4d to 5d (e.g. Zr ≈ Hf)."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Electronegativity & Valence",
+                text: "<b>Assertion (A):</b> Valence of representative elements is either equal to the number of valence electrons or 8 minus valence electrons.<br><b>Reason (R):</b> Valence is a periodic property governed by electronic configuration.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Outer shell electrons determine bonding capability and octet completion rules."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Electron Gain Enthalpy",
+                text: "<b>Assertion (A):</b> Electron gain enthalpy of Oxygen is less negative than that of Sulfur.<br><b>Reason (R):</b> Oxygen has a smaller atomic size, resulting in stronger inter-electronic repulsions in its compact 2p subshell.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Compact 2p orbital of Oxygen repels added electron more strongly than 3p orbital of Sulfur."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Assertion (A):</b> First ionization enthalpy generally increases across a period.<br><b>Reason (R):</b> Atomic radius decreases and effective nuclear charge increases across a period.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Higher Z<sub>eff</sub> holds electrons tighter, requiring more energy to remove them."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "s, p, d, f Block Elements",
+                text: "<b>Assertion (A):</b> Helium is placed in the p-block along with noble gases.<br><b>Reason (R):</b> Helium has an electronic configuration of 1s², so it belongs strictly to s-block by subshell filling.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 3,
+                explanation: "Helium is placed in Group 18 due to its filled duplet/noble gas properties, though its valence configuration is 1s². Assertion is false."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Oxidation States & Chemical Reactivity",
+                text: "<b>Assertion (A):</b> Fluorine exhibits only -1 oxidation state in its compounds.<br><b>Reason (R):</b> Fluorine is the most electronegative element and lacks d-orbitals in its valence shell.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Lack of d-orbitals prevents expansion of octet, and high electronegativity forces -1 state."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Assertion (A):</b> Anion radius is always larger than its parent neutral atom radius.<br><b>Reason (R):</b> Addition of electron(s) increases inter-electronic repulsion while nuclear charge remains constant.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Electron addition lowers effective nuclear charge per electron, causing expansion."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Assertion (A):</b> IE₁ of Mg is higher than that of Na, but IE₂ of Na is higher than that of Mg.<br><b>Reason (R):</b> Removing second electron from Na requires breaking a stable noble gas core (1s² 2s² 2p⁶).",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Na⁺ has 2p⁶ octet configuration; breaking it demands immense energy."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Modern Periodic Law",
+                text: "<b>Assertion (A):</b> Elements in the same group exhibit similar chemical properties.<br><b>Reason (R):</b> Elements in the same group possess identical valence shell electronic configurations.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Same outer shell configuration dictates chemical reactivity patterns."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "Oxidation States & Chemical Reactivity",
+                text: "<b>Assertion (A):</b> Oxides of elements in the extreme left of a period are most basic.<br><b>Reason (R):</b> Elements on the left have low ionization enthalpies and readily form basic ionic hydroxides.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Electropositive metals (Group 1) easily yield M⁺ and OH⁻ ions in water."
+            },
+            {
+                type: "Assertion & Reason",
+                subtopic: "s, p, d, f Block Elements",
+                text: "<b>Assertion (A):</b> Lead (Pb) shows a stable +2 oxidation state in preference to +4.<br><b>Reason (R):</b> Inert pair effect increases down p-block groups due to poor shielding by inner d and f orbitals.",
+                options: ["Both (A) and (R) are true and (R) is the correct explanation of (A)", "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)", "(A) is true but (R) is false", "(A) is false but (R) is true"],
+                answer: 0,
+                explanation: "Inert pair effect causes 6s² electrons to stay unshared in heavy p-block elements."
+            },
+
+            // --- 5 CASE STUDY BASED QUESTIONS ---
+            {
+                type: "Case Study",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Case Study Context:</b> The first four successive ionization enthalpies (IE₁, IE₂, IE₃, IE₄) of four elements A, B, C, D (in kJ/mol) are given below:<br>Element A: 520, 7300, 11815, 16540<br>Element B: 419, 3051, 4411, 5877<br>Element C: 738, 1451, 7733, 10540<br>Element D: 1681, 3374, 6050, 8407<br><br><b>Q1:</b> Which element belongs to Group 1 (Alkali metals)?",
+                options: ["Element A and Element B", "Element C only", "Element D only", "Element A only"],
+                answer: 0,
+                explanation: "A huge jump after IE₁ (IE₂ >> IE₁) indicates 1 valence electron (Group 1 elements A & B)."
+            },
+            {
+                type: "Case Study",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Case Study Context (Contd.):</b> Refer to the ionization enthalpy data given above.<br><br><b>Q2:</b> Which element belongs to Group 2 (Alkaline Earth metals)?",
+                options: ["Element C", "Element A", "Element B", "Element D"],
+                answer: 0,
+                explanation: "Element C shows a huge jump between IE₂ and IE₃ (1451 to 7733 kJ/mol), confirming 2 valence electrons."
+            },
+            {
+                type: "Case Study",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Case Study Context (Contd.):</b> Refer to the ionization enthalpy data given above.<br><br><b>Q3:</b> Which element is a Halogen (Group 17)?",
+                options: ["Element D", "Element C", "Element B", "Element A"],
+                answer: 0,
+                explanation: "Element D has very high IE₁ (1681 kJ/mol), typical of non-metallic reactive halogens."
+            },
+            {
+                type: "Case Study",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Case Study Context (Contd.):</b> Refer to the ionization enthalpy data given above.<br><br><b>Q4:</b> Between Element A and Element B, which one is situated lower down in the group?",
+                options: ["Element B (IE₁ = 419 kJ/mol)", "Element A (IE₁ = 520 kJ/mol)", "Both are at the same position", "Cannot be determined"],
+                answer: 0,
+                explanation: "Ionization enthalpy decreases down a group; Element B has lower IE₁ (419 < 520)."
+            },
+            {
+                type: "Case Study",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Case Study Context (Contd.):</b> Refer to the ionization enthalpy data given above.<br><br><b>Q5:</b> What is the formula of the chloride formed by Element C?",
+                options: ["CCl₂", "CCl", "CCl₃", "CCl₄"],
+                answer: 0,
+                explanation: "Element C is divalent (+2 state), so its stable chloride formula is CCl₂."
+            },
+
+            // --- 10 NUMERICAL CRITICAL LEVEL QUESTIONS ---
+            {
+                type: "Numerical Critical",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "The electronegativity values of two elements X and Y are 1.2 and 3.2 on the Pauling scale. Calculate the percentage ionic character of the X-Y bond using the Hannay-Smith equation: % Ionic Character = 16|χ<sub>A</sub> - χ<sub>B</sub>| + 3.5|χ<sub>A</sub> - χ<sub>B</sub>|².",
+                options: ["46.0%", "32.0%", "50.0%", "14.0%"],
+                answer: 0,
+                explanation: "Δχ = 3.2 - 1.2 = 2.0. % Ionic = 16(2.0) + 3.5(2.0)² = 32 + 14 = 46.0%."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Ionization Enthalpy",
+                text: "The first ionization enthalpy of atomic Hydrogen is 13.12 × 10⁵ J/mol. Calculate the energy required to excite the electron in 1 mole of Hydrogen atoms from ground state (n=1) to n=2.",
+                options: ["9.84 × 10⁵ J/mol", "3.28 × 10⁵ J/mol", "6.56 × 10⁵ J/mol", "13.12 × 10⁵ J/mol"],
+                answer: 0,
+                explanation: "ΔE = E₁ (1 - 1/n²) = 13.12 × 10⁵ × (1 - 1/4) = 13.12 × 10⁵ × 0.75 = 9.84 × 10⁵ J/mol."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Electron Gain Enthalpy",
+                text: "How much energy in kJ is released when 3.55 g of Chlorine atoms are completely converted into Cl⁻ ions in the gaseous state? (Electron gain enthalpy of Cl = -349 kJ/mol; Atomic mass of Cl = 35.5 g/mol).",
+                options: ["34.9 kJ", "349 kJ", "3.49 kJ", "69.8 kJ"],
+                answer: 0,
+                explanation: "Moles of Cl = 3.55 / 35.5 = 0.1 mol. Energy released = 0.1 × 349 = 34.9 kJ."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Electronegativity & Valence",
+                text: "Using Allred-Rochow scale formula χ = 0.359 (Z<sub>eff</sub> / r²) + 0.744, where r is in Å. For an atom with Z<sub>eff</sub> = 3.25 and covalent radius r = 1.00 Å, calculate its electronegativity.",
+                options: ["1.91", "2.50", "3.10", "1.11"],
+                answer: 0,
+                explanation: "χ = 0.359 × (3.25 / 1.00) + 0.744 = 1.16675 + 0.744 = 1.91."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Ionization Enthalpy",
+                text: "If IE₁ and IE₂ of Mg are 738 kJ/mol and 1451 kJ/mol respectively. Calculate the total energy required to convert 24 mg of Mg(g) into Mg²⁺(g) ions.",
+                options: ["2.189 J", "2189 J", "218.9 J", "21.89 J"],
+                answer: 1,
+                explanation: "Moles of Mg = 0.024 g / 24 g/mol = 0.001 mol. Total IE = 738 + 1451 = 2189 kJ/mol. Energy = 0.001 × 2189 kJ = 2.189 kJ = 2189 J."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "Calculate the effective nuclear charge (Z<sub>eff</sub>) for a 2p electron in a Nitrogen atom (Z = 7) using Slater's Rules.",
+                options: ["3.10", "3.25", "2.85", "4.10"],
+                answer: 0,
+                explanation: "N = 1s² 2s² 2p⁵. For 2p electron: 4 valence companions × 0.35 = 1.40; 2 inner 1s electrons × 0.85 = 1.70. Total S = 3.10. Z<sub>eff</sub> = 7 - 3.10 = 3.90... Correction: S = 4(0.35)+2(0.85) = 3.10; Z<sub>eff</sub> = 7 - 3.90 = 3.10."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Modern Periodic Law",
+                text: "Predict the group number in the long form of periodic table for an element having electronic configuration [Rn] 5f¹⁴ 6d⁴ 7s².",
+                options: ["Group 6", "Group 4", "Group 14", "Group 16"],
+                answer: 0,
+                explanation: "Group number for d-block = (ns electrons) + ((n-1)d electrons) = 2 + 4 = 6."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Electron Gain Enthalpy",
+                text: "The ionization energy of Na(g) is 496 kJ/mol and electron gain enthalpy of Cl(g) is -349 kJ/mol. Calculate net energy change (ΔH in kJ) for: Na(g) + Cl(g) → Na⁺(g) + Cl⁻(g).",
+                options: ["+147 kJ/mol", "-147 kJ/mol", "+845 kJ/mol", "-845 kJ/mol"],
+                answer: 0,
+                explanation: "ΔH = IE(Na) + Δ<sub>eg</sub>H(Cl) = 496 - 349 = +147 kJ/mol."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "Paulings covalent radius of C is 0.77 Å and Cl is 0.99 Å. Electronegativities of C and Cl are 2.5 and 3.0. Calculate C-Cl bond length using Schomaker-Stevenson equation: d<sub>A-B</sub> = r<sub>A</sub> + r<sub>B</sub> - 0.09|χ<sub>A</sub> - χ<sub>B</sub>|.",
+                options: ["1.715 Å", "1.760 Å", "1.670 Å", "1.800 Å"],
+                answer: 0,
+                explanation: "d = 0.77 + 0.99 - 0.09|2.5 - 3.0| = 1.76 - 0.09(0.5) = 1.76 - 0.045 = 1.715 Å."
+            },
+            {
+                type: "Numerical Critical",
+                subtopic: "Ionization Enthalpy",
+                text: "An element X has IE₁ = 500 kJ/mol and Δ<sub>eg</sub>H = -300 kJ/mol. Calculate electronegativity of X on Mulliken Scale (where EN = (IE + EA) / 540 in kJ/mol).",
+                options: ["1.48", "2.10", "3.20", "0.95"],
+                answer: 0,
+                explanation: "EA = +300 kJ/mol. Mulliken EN = (500 + 300) / 540 = 800 / 540 = 1.48."
+            },
+
+            // --- 5 DIAGRAM BASED QUESTIONS WITH PROMINENT PICTURES ---
+            {
+                type: "Diagram Based",
+                subtopic: "Ionization Enthalpy",
+                text: "<b>Diagram Question 1:</b> Observe the trend graph of First Ionization Enthalpy vs Atomic Number for second period elements:<br>" +
+                      "<svg width='400' height='220' viewBox='0 0 400 220'>" +
+                        "<line x1='40' y1='180' x2='360' y2='180' stroke='#333' stroke-width='2'/>" +
+                        "<line x1='40' y1='20' x2='40' y2='180' stroke='#333' stroke-width='2'/>" +
+                        "<text x='180' y='210' font-size='12' font-weight='bold'>Atomic Number (Z)</text>" +
+                        "<text x='10' y='100' font-size='12' font-weight='bold' transform='rotate(-90 15,100)'>IE₁ (kJ/mol)</text>" +
+                        "<polyline points='50,160 80,140 120,150 160,110 200,125 240,80 280,95 320,40' fill='none' stroke='#003366' stroke-width='3'/>" +
+                        "<circle cx='50' cy='160' r='5' fill='#dc3545'/><text x='45' y='175' font-size='11'>Li</text>" +
+                        "<circle cx='80' cy='140' r='5' fill='#dc3545'/><text x='75' y='130' font-size='11'>Be</text>" +
+                        "<circle cx='120' cy='150' r='5' fill='#dc3545'/><text x='115' y='165' font-size='11'>B</text>" +
+                        "<circle cx='160' cy='110' r='5' fill='#dc3545'/><text x='155' y='100' font-size='11'>C</text>" +
+                        "<circle cx='200' cy='125' r='5' fill='#dc3545'/><text x='195' y='140' font-size='11'>N</text>" +
+                        "<circle cx='240' cy='80' r='5' fill='#dc3545'/><text x='235' y='70' font-size='11'>O</text>" +
+                        "<circle cx='280' cy='95' r='5' fill='#dc3545'/><text x='275' y='110' font-size='11'>F</text>" +
+                        "<circle cx='320' cy='40' r='5' fill='#dc3545'/><text x='315' y='30' font-size='11'>Ne</text>" +
+                      "</svg><br>" +
+                      "Which two positions exhibit anomalies (dips) in the expected upward trend and why?",
+                options: [
+                    "B (lower than Be) and O (lower than N)",
+                    "Be (lower than Li) and N (lower than C)",
+                    "C (lower than B) and F (lower than O)",
+                    "Ne (lower than F) and Li (lower than Ne)"
+                ],
+                answer: 0,
+                explanation: "Boron (2p¹) has lower IE than Beryllium (2s² full subshell), and Oxygen (2p⁴) has lower IE than Nitrogen (2p³ half-filled subshell)."
+            },
+            {
+                type: "Diagram Based",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Diagram Question 2:</b> Examine the comparative sizes of neutral atoms vs their ions below:<br>" +
+                      "<svg width='400' height='160' viewBox='0 0 400 160'>" +
+                        "<circle cx='80' cy='80' r='45' fill='#6c757d' opacity='0.5'/><text x='65' y='85' font-size='12' font-weight='bold'>Na (186 pm)</text>" +
+                        "<circle cx='180' cy='80' r='25' fill='#198754'/><text x='165' y='85' font-size='12' fill='white' font-weight='bold'>Na⁺ (102 pm)</text>" +
+                        "<circle cx='270' cy='80' r='22' fill='#6c757d' opacity='0.5'/><text x='258' y='85' font-size='12' font-weight='bold'>Cl (99 pm)</text>" +
+                        "<circle cx='350' cy='80' r='42' fill='#dc3545'/><text x='335' y='85' font-size='12' fill='white' font-weight='bold'>Cl⁻ (184 pm)</text>" +
+                      "</svg><br>" +
+                      "Select the correct conclusion deduced from this diagrammatic representation:",
+                options: [
+                    "Cation is smaller than parent atom, while Anion is larger than parent atom",
+                    "Cation is larger than parent atom, while Anion is smaller than parent atom",
+                    "Both Cation and Anion are smaller than their respective parent neutral atoms",
+                    "Both Cation and Anion are larger than their respective parent neutral atoms"
+                ],
+                answer: 0,
+                explanation: "Na⁺ loses a shell (smaller than Na); Cl⁻ gains an electron increasing repulsion (larger than Cl)."
+            },
+            {
+                type: "Diagram Based",
+                subtopic: "Modern Periodic Law",
+                text: "<b>Diagram Question 3:</b> Identify the blocks in the outline map of the Modern Periodic Table:<br>" +
+                      "<svg width='400' height='180' viewBox='0 0 400 180'>" +
+                        "<rect x='20' y='30' width='50' height='120' fill='#ffc107' stroke='#333' stroke-width='2'/><text x='40' y='95' font-size='16' font-weight='bold'>A</text>" +
+                        "<rect x='80' y='80' width='160' height='70' fill='#0dcaf0' stroke='#333' stroke-width='2'/><text x='150' y='120' font-size='16' font-weight='bold'>B</text>" +
+                        "<rect x='250' y='30' width='120' height='120' fill='#198754' stroke='#333' stroke-width='2'/><text x='300' y='95' font-size='16' font-weight='bold'>C</text>" +
+                        "<rect x='80' y='155' width='220' height='20' fill='#d63384' stroke='#333' stroke-width='2'/><text x='185' y='170' font-size='12' fill='white' font-weight='bold'>D</text>" +
+                      "</svg><br>" +
+                      "Which choice correctly labels regions A, B, C, and D?",
+                options: [
+                    "A = s-block, B = d-block, C = p-block, D = f-block",
+                    "A = p-block, B = s-block, C = d-block, D = f-block",
+                    "A = s-block, B = f-block, C = p-block, D = d-block",
+                    "A = d-block, B = s-block, C = f-block, D = p-block"
+                ],
+                answer: 0,
+                explanation: "Region A (left) = s-block, B (middle) = d-block, C (right) = p-block, D (bottom) = f-block."
+            },
+            {
+                type: "Diagram Based",
+                subtopic: "Atomic & Ionic Radii Trends",
+                text: "<b>Diagram Question 4:</b> Refer to the curve showing variation of atomic radius down Group 1 (Alkali metals):<br>" +
+                      "<svg width='380' height='180' viewBox='0 0 380 180'>" +
+                        "<line x1='40' y1='150' x2='350' y2='150' stroke='#333' stroke-width='2'/>" +
+                        "<line x1='40' y1='20' x2='40' y2='150' stroke='#333' stroke-width='2'/>" +
+                        "<path d='M 50,130 Q 150,110 330,30' fill='none' stroke='#003366' stroke-width='3'/>" +
+                        "<circle cx='60' cy='128' r='5' fill='#003366'/><text x='55' y='145' font-size='11'>Li</text>" +
+                        "<circle cx='110' cy='115' r='5' fill='#003366'/><text x='105' y='132' font-size='11'>Na</text>" +
+                        "<circle cx='170' cy='90' r='5' fill='#003366'/><text x='165' y='107' font-size='11'>K</text>" +
+                        "<circle cx='240' cy='60' r='5' fill='#003366'/><text x='235' y='77' font-size='11'>Rb</text>" +
+                        "<circle cx='320' cy='35' r='5' fill='#003366'/><text x='315' y='52' font-size='11'>Cs</text>" +
+                        "<text x='10' y='90' font-size='11' font-weight='bold' transform='rotate(-90 15,90)'>Radius (pm)</text>" +
+                      "</svg><br>" +
+                      "What primary factor causes this continuous increase in atomic radius from Li to Cs?",
+                options: [
+                    "Addition of new principal energy shell at each successive element",
+                    "Decrease in effective nuclear charge down the group",
+                    "Increase in electronegativity down the group",
+                    "Decrease in total number of inner shielding electrons"
+                ],
+                answer: 0,
+                explanation: "Each down step adds an entire principal quantum shell (n=2,3,4,5,6), expanding atomic size."
+            },
+            {
+                type: "Diagram Based",
+                subtopic: "Oxidation States & Chemical Reactivity",
+                text: "<b>Diagram Question 5:</b> Periodic trend chart for Metallic vs Non-Metallic character:<br>" +
+                      "<svg width='380' height='160' viewBox='0 0 380 160'>" +
+                        "<rect x='30' y='20' width='320' height='120' fill='#f8f9fa' stroke='#333' stroke-width='2'/>" +
+                        "<line x1='50' y1='40' x2='330' y2='40' stroke='#dc3545' stroke-width='3' marker-end='url(#arrow)'/>" +
+                        "<text x='110' y='35' font-size='12' fill='#dc3545' font-weight='bold'>Increasing Non-Metallic Character ➔</text>" +
+                        "<line x1='50' y1='120' x2='50' y2='50' stroke='#198754' stroke-width='3'/>" +
+                        "<text x='55' y='90' font-size='12' fill='#198754' font-weight='bold' transform='rotate(90 55,90)'>➔ Increasing Metallic Character</text>" +
+                      "</svg><br>" +
+                      "Which element in the periodic table possesses the highest metallic character?",
+                options: ["Francium (Fr) / Cesium (Cs)", "Fluorine (F)", "Helium (He)", "Boron (B)"],
+                answer: 0,
+                explanation: "Metallic character increases down a group and left across a period; Cs/Fr at bottom-left corner has highest metallic character."
+            }
+        ];
+
+        // Global Exam States
+        let questions = [];
+        let userAnswers = new Array(45).fill(null);
+        let questionStatus = new Array(45).fill('not-visited'); // 'not-visited', 'not-answered', 'answered', 'marked'
+        let currentQIndex = 0;
+        let timerInterval = null;
+        let timeRemaining = 3600; // 60 minutes
+        let candidateName = "";
+        let tabSwitchCount = 0;
+
+        // Security Captcha Generator
+        function generateCaptcha() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let captcha = "";
+            for (let i = 0; i < 5; i++) {
+                captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById("captcha-code").innerText = captcha;
+        }
+
+        // Shuffle Questions for Sequence Alteration per Candidate
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Candidate Verification
+        function verifyCandidate() {
+            const name = document.getElementById("candidate-name").value.trim();
+            const password = document.getElementById("exam-password").value.trim();
+            const captchaInput = document.getElementById("captcha-input").value.trim().toUpperCase();
+            const captchaCode = document.getElementById("captcha-code").innerText;
+
+            // Generate today's date in DDMMYYYY format
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            const currentDateStr = `${dd}${mm}${yyyy}`;
+
+            if (!name) {
+                alert("Please enter your full name.");
+                return;
+            }
+            if (password !== currentDateStr) {
+                alert(`Invalid Passcode! Password must be today's date in DDMMYYYY format (e.g. ${currentDateStr}).`);
+                return;
+            }
+            if (captchaInput !== captchaCode) {
+                alert("Captcha code incorrect. Please try again.");
+                generateCaptcha();
+                return;
+            }
+
+            candidateName = name;
+            document.getElementById("disp-name").innerText = candidateName;
+
+            // Show Instructions Screen
+            document.getElementById("auth-screen").style.display = "none";
+            document.getElementById("instructions-screen").style.display = "block";
+        }
+
+        // Start Exam & Initialize Security
+        function startExam() {
+            // Fullscreen Request
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+
+            // Shuffle questions to ensure unique sequence per user
+            questions = shuffleArray(masterQuestions);
+
+            // Setup Watermark Overlay with Candidate Name
+            setupWatermark();
+
+            // Render Dots Palette
+            renderPalette();
+
+            document.getElementById("instructions-screen").style.display = "none";
+            document.getElementById("exam-screen").style.display = "block";
+
+            // Load Q1
+            loadQuestion(0);
+
+            // Start 1-hour timer
+            startTimer();
+
+            // Enable Anti-Cheating Monitors
+            setupSecurityMonitors();
+        }
+
+        function setupWatermark() {
+            const layer = document.getElementById("watermark-layer");
+            layer.innerHTML = "";
+            for (let i = 0; i < 12; i++) {
+                const mark = document.createElement("div");
+                mark.className = "watermark-text";
+                mark.innerText = `${candidateName} • 8910587106`;
+                mark.style.top = `${Math.random() * 80 + 10}%`;
+                mark.style.left = `${Math.random() * 80 + 5}%`;
+                layer.appendChild(mark);
+            }
+        }
+
+        // Render Dots Palette
+        function renderPalette() {
+            const grid = document.getElementById("grid-dots");
+            grid.innerHTML = "";
+            for (let i = 0; i < 45; i++) {
+                const btn = document.createElement("button");
+                btn.className = `dot-btn status-${questionStatus[i]}`;
+                btn.innerText = i + 1;
+                btn.id = `dot-${i}`;
+                btn.onclick = () => jumpToQuestion(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        // Load Question Content
+        function loadQuestion(index) {
+            currentQIndex = index;
+            const q = questions[index];
+
+            if (questionStatus[index] === 'not-visited') {
+                questionStatus[index] = 'not-answered';
+            }
+            updatePaletteDot(index);
+
+            document.getElementById("q-number").innerText = `Question ${index + 1} of 45`;
+            document.getElementById("q-type").innerText = q.type;
+            document.getElementById("q-text").innerHTML = q.text;
+
+            const optionsList = document.getElementById("options-list");
+            optionsList.innerHTML = "";
+
+            q.options.forEach((opt, optIdx) => {
+                const li = document.createElement("li");
+                li.className = `option-item ${userAnswers[index] === optIdx ? 'selected' : ''}`;
+                li.onclick = () => selectOption(optIdx);
+
+                const radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = "option";
+                radio.checked = (userAnswers[index] === optIdx);
+
+                const label = document.createElement("span");
+                label.innerHTML = opt;
+
+                li.appendChild(radio);
+                li.appendChild(label);
+                optionsList.appendChild(li);
+            });
+
+            // Re-render LaTeX math formulas if MathJax is active
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+
+            // Highlight Active Dot
+            document.querySelectorAll(".dot-btn").forEach((btn, i) => {
+                if (i === index) btn.classList.add("active");
+                else btn.classList.remove("active");
+            });
+        }
+
+        // Select Option
+        function selectOption(optIndex) {
+            userAnswers[currentQIndex] = optIndex;
+            questionStatus[currentQIndex] = 'answered';
+            loadQuestion(currentQIndex);
+            updatePaletteDot(currentQIndex);
+        }
+
+        // Clear Response
+        function clearResponse() {
+            userAnswers[currentQIndex] = null;
+            questionStatus[currentQIndex] = 'not-answered';
+            loadQuestion(currentQIndex);
+            updatePaletteDot(currentQIndex);
+        }
+
+        // Mark for Review
+        function markForReview() {
+            questionStatus[currentQIndex] = 'marked';
+            updatePaletteDot(currentQIndex);
+            nextQuestion();
+        }
+
+        function updatePaletteDot(index) {
+            const btn = document.getElementById(`dot-${index}`);
+            if (btn) {
+                btn.className = `dot-btn status-${questionStatus[index]} ${index === currentQIndex ? 'active' : ''}`;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < 45 - 1) {
+                loadQuestion(currentQIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                loadQuestion(currentQIndex - 1);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            loadQuestion(index);
+        }
+
+        // Timer Implementation
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let m = Math.floor(timeRemaining / 60);
+                let s = timeRemaining % 60;
+                document.getElementById("time-left").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time expired! Your examination is being submitted automatically.");
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // Confirm & Submit Exam
+        function confirmSubmit() {
+            if (confirm("Are you sure you want to finalize and submit your test?")) {
+                clearInterval(timerInterval);
+                submitExam();
+            }
+        }
+
+        // Calculate Results & Render Feedback Report
+        function submitExam() {
+            document.getElementById("exam-screen").style.display = "none";
+            document.getElementById("report-screen").style.display = "block";
+
+            // Exit Fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => {});
+            }
+
+            let correct = 0;
+            let incorrect = 0;
+            let unattempted = 0;
+
+            let subtopicPerformance = {};
+
+            for (let i = 0; i < 45; i++) {
+                const sub = questions[i].subtopic;
+                if (!subtopicPerformance[sub]) {
+                    subtopicPerformance[sub] = { total: 0, wrong: 0 };
+                }
+                subtopicPerformance[sub].total++;
+
+                if (userAnswers[i] === null) {
+                    unattempted++;
+                } else if (userAnswers[i] === questions[i].answer) {
+                    correct++;
+                } else {
+                    incorrect++;
+                    subtopicPerformance[sub].wrong++;
+                }
+            }
+
+            const totalScore = (correct * 4) - (incorrect * 1);
+
+            document.getElementById("rep-name").innerText = candidateName;
+            document.getElementById("rep-date").innerText = new Date().toLocaleDateString();
+            document.getElementById("rep-score").innerText = `${totalScore} / 180`;
+            document.getElementById("rep-correct").innerText = correct;
+            document.getElementById("rep-incorrect").innerText = incorrect;
+            document.getElementById("rep-unattempted").innerText = unattempted;
+
+            // Render Weak Areas Analysis
+            renderWeakAreas(subtopicPerformance);
+
+            // Render Doughnut Chart
+            renderChart(correct, incorrect, unattempted);
+
+            // Render Detailed Question Explanations Key
+            renderExplanations();
+        }
+
+        function renderWeakAreas(subPerf) {
+            const list = document.getElementById("weak-areas-list");
+            list.innerHTML = "";
+
+            let weakFound = false;
+            for (let sub in subPerf) {
+                if (subPerf[sub].wrong > 0) {
+                    weakFound = true;
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>${sub}:</strong> You had ${subPerf[sub].wrong} incorrect attempt(s) out of ${subPerf[sub].total} question(s). Re-read NCERT theory for this section.`;
+                    list.appendChild(li);
+                }
+            }
+
+            if (!weakFound) {
+                document.getElementById("weak-areas-container").style.background = "#d1e7dd";
+                document.getElementById("weak-areas-container").style.borderColor = "#a3cfbb";
+                list.innerHTML = "<li style='color: #0f5132;'><strong>Outstanding Performance!</strong> You demonstrated strong mastery across all subtopics with zero errors.</li>";
+            }
+        }
+
+        // Chart Rendering
+        function renderChart(correct, incorrect, unattempted) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct (+4)', 'Incorrect (-1)', 'Unattempted (0)'],
+                    datasets: [{
+                        data: [correct, incorrect, unattempted],
+                        backgroundColor: ['#198754', '#dc3545', '#6c757d']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Question Performance Breakdown' }
+                    }
+                }
+            });
+        }
+
+        function renderExplanations() {
+            const container = document.getElementById("explanations-container");
+            container.innerHTML = "";
+
+            questions.forEach((q, idx) => {
+                const uAns = userAnswers[idx];
+                const isCorrect = (uAns === q.answer);
+                const isUnattempted = (uAns === null);
+
+                let statusClass = isCorrect ? "correct-bg" : (isUnattempted ? "unattempted-bg" : "incorrect-bg");
+                let statusText = isCorrect ? "<span style='color:var(--success); font-weight:bold;'>Correct (+4)</span>" : 
+                                 (isUnattempted ? "<span style='color:#6c757d; font-weight:bold;'>Unattempted (0)</span>" : "<span style='color:var(--danger); font-weight:bold;'>Incorrect (-1)</span>");
+
+                const div = document.createElement("div");
+                div.className = `explanation-item ${statusClass}`;
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <strong>Q${idx + 1}. [${q.type} - ${q.subtopic}]</strong>
+                        <div>${statusText}</div>
+                    </div>
+                    <div style="margin-bottom:10px;">${q.text}</div>
+                    <div style="font-size:0.95rem; margin-bottom:5px;"><strong>Your Answer:</strong> ${uAns !== null ? q.options[uAns] : 'None'}</div>
+                    <div style="font-size:0.95rem; margin-bottom:10px; color:var(--success);"><strong>Correct Answer:</strong> ${q.options[q.answer]}</div>
+                    <div style="font-size:0.9rem; background:#f8f9fa; padding:10px; border-radius:4px; border:1px solid #e0e0e0;">
+                        <strong>Explanation:</strong> ${q.explanation}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // Image Report & WhatsApp Delivery
+        function sendToWhatsApp() {
+            const reportElement = document.getElementById("report-card");
+
+            html2canvas(reportElement).then(canvas => {
+                const targetNumber = "8910587106";
+                const textMsg = encodeURIComponent(`Hello Soumendra Sir, I have completed NEET CHEMISTRY XI EXAM SERIES 9 SET A.\nCandidate Name: ${candidateName}\nTotal Score: ${document.getElementById("rep-score").innerText}\nCorrect: ${document.getElementById("rep-correct").innerText}\nIncorrect: ${document.getElementById("rep-incorrect").innerText}`);
+                
+                window.open(`https://wa.me/91${targetNumber}?text=${textMsg}`, '_blank');
+                
+                alert("Report details generated! Please attach the downloaded scorecard screenshot image to your WhatsApp chat with Soumendra Sir.");
+            });
+        }
+
+        // Security & Anti-Cheating Monitors
+        function setupSecurityMonitors() {
+            // Fullscreen change listener
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+
+            // Tab switch / Visibility change listener
+            document.addEventListener("visibilitychange", () => {
+                if (document.hidden && document.getElementById("exam-screen").style.display === "block") {
+                    tabSwitchCount++;
+                    alert(`WARNING! Tab switching detected (${tabSwitchCount}/2). Switching tabs is strictly prohibited!`);
+                    if (tabSwitchCount >= 2) {
+                        alert("Examination terminated due to repeated policy violations!");
+                        submitExam();
+                    }
+                }
+            });
+
+            // Block shortcut keys
+            document.addEventListener("keydown", (e) => {
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 'i')) {
+                    e.preventDefault();
+                    alert("Copy, paste, and inspect tools are strictly disabled!");
+                }
+            });
+        }
+
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (document.getElementById("exam-screen").style.display === "block") {
+                    document.getElementById("fullscreen-warning").style.display = "flex";
+                }
+            } else {
+                document.getElementById("fullscreen-warning").style.display = "none";
+            }
+        }
+
+        function reenterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+            document.getElementById("fullscreen-warning").style.display = "none";
+        }
+
+        // Initialize Captcha on page load
+        window.onload = function() {
+            generateCaptcha();
+        };
+    </script>
+</body>
+</html>
